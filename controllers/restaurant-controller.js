@@ -72,7 +72,7 @@ const restaurantController = {
   },
   // (頁面) 顯示最新消息
   getFeeds: (req, res, next) => {
-    Promise.all([
+    return Promise.all([
       Restaurant.findAll({
         limit: 10,
         order: [['createdAt', 'DESC']],
@@ -89,6 +89,27 @@ const restaurantController = {
       })
     ])
       .then(([restaurants, comments]) => res.render('feeds', { restaurants, comments }))
+      .catch(err => next(err))
+  },
+  // (頁面) 顯示top restaurants
+  getTopRestaurants: (req, res, next) => {
+    return Restaurant.findAll({ nest: true, include: [Category, { model: User, as: 'FavoritedUsers' }] })
+      .then(restaurants => {
+        // 整理資料，排序後取出前10筆
+        restaurants = restaurants
+          .map(restaurant => ({
+            ...restaurant.toJSON(),
+            favoritedCount: restaurant.FavoritedUsers.length,
+            categoryName: restaurant.Category ? restaurant.Category.dataValues.name : '未分類', // 不加'restaurant.Category ? :'測試會報錯
+            isFavorited: req.user && restaurant.FavoritedUsers.some(user => user.id === req.user.id) // 不加'req.user && '測試會報錯
+          }))
+          .sort((a, b) => b.favoritedCount - a.favoritedCount)
+          .slice(0, 10)
+
+        // console.log(restaurants)
+
+        return res.render('top-restaurants', { restaurants })
+      })
       .catch(err => next(err))
   }
 }
