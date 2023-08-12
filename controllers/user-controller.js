@@ -5,6 +5,7 @@ const db = require('../models')
 const { User, Comment, Restaurant, Favorite, Like, Followship } = db
 
 const { imgurFileHandler } = require('../helpers/file-helpers')
+const { getUser } = require('../helpers/auth-helpers')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -54,14 +55,16 @@ const userController = {
     })
       .then(user => {
         if (!user) throw new Error('user not exist!')
-        return res.render('users/profile', { user: user.toJSON() })
+        return res.render('users/profile', { viewedUser: user.toJSON() }) // 修正名稱user-->viewedUser，才不會把前端樣板的res.locals.user蓋掉，造成navbar等異常
       })
       .catch(err => next(err))
   },
   // (頁面)編輯profile
   editUser: (req, res, next) => {
-    // 資料已在res.locals.user中，理論上不必再讀或傳
-    // 但測試檔未經完整流程，res.locals中可能無資料
+    // 完整流程中，資料已在req.user或res.locals.user中，理論上不必再讀或傳
+    // 但測試檔沒有完整定義，但提供getUser()這個函數
+    if (getUser(req).id !== Number(req.params.id)) throw new Error("You can't edit other's profile")
+
     return User.findByPk(req.params.id, { raw: true })
       .then(user => {
         if (!user) throw new Error('user not exist!')

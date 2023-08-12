@@ -2,27 +2,28 @@
 
   <div class="row mb-5">
     <div class="col-md-4">
-      <img class="img-fluid d-block mx-auto" src="{{user.image}}" width="240" height="320" alt="avatar">
+      <img class="img-fluid d-block mx-auto" src="{{viewedUser.image}}" width="240" height="320" alt="avatar">
     </div>
     <div class="col-md-8">
-      <h1 class="mb-3">{{user.name}}</h1>
+      <h1 class="mb-3">{{viewedUser.name}}</h1>
 
       <ul class="list-unstyled mb-3">
-        <li class="mb-4"><strong>Email:</strong> {{user.email}} </li>
-        <li><strong>{{count user.Comments}}</strong> 已評論餐廳</li>
+        <li class="mb-4"><strong>Email:</strong> {{viewedUser.email}} </li>
+        <li><strong>{{count viewedUser.Comments}}</strong> 已評論餐廳</li>
       </ul>
 
-      <a class="btn btn-primary" href="/users/{{user.id}}/edit">Edit</a>
+      {{#ifCond viewedUser.id user.id}}
+        <a class="btn btn-primary" href="/users/{{user.id}}/edit">Edit</a>
+      {{/ifCond}}
     </div>
   </div>
 
-
   <div class="card">
     <div class="card-header">
-      <strong>{{count user.Comments}}</strong> 已評論餐廳
+      <strong>{{count viewedUser.Comments}}</strong> 已評論餐廳
     </div>
     <div class="card-body row">
-      {{#each user.Comments}}
+      {{#each viewedUser.Comments}}
         <div class="col-4 col-md-2">
           <a href="/restaurants/{{this.Restaurant.id}}">
             <img class="img-fluid d-block mx-auto" src="{{this.Restaurant.image}}" title="{{this.Restaurant.name}}" alt="{{this.Restaurant.name}}">
