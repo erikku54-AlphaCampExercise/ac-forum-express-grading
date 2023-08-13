@@ -54,7 +54,8 @@ app.use((req, res, next) => {
 })
 
 // setting router
-const { pages } = require('./routes')
+const { pages, apis } = require('./routes')
+app.use('/api', apis)
 app.use(pages)
 
 // start listening
