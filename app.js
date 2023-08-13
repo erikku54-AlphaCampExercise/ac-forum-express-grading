@@ -54,8 +54,8 @@ app.use((req, res, next) => {
 })
 
 // setting router
-const routes = require('./routes')
-app.use(routes)
+const { pages } = require('./routes')
+app.use(pages)
 
 // start listening
 app.listen(port, () => {

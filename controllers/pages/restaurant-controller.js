@@ -1,6 +1,6 @@
 
-const { Restaurant, Category, Comment, User } = require('../models')
-const { getOffset, getPagination } = require('../helpers/pagination-helpers')
+const { Restaurant, Category, Comment, User } = require('../../models')
+const { getOffset, getPagination } = require('../../helpers/pagination-helpers')
 
 const restaurantController = {
   // (頁面) 瀏覽所有餐廳-首頁
