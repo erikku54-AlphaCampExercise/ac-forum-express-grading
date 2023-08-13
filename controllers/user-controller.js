@@ -47,15 +47,25 @@ const userController = {
   },
   // (頁面)瀏覽profile
   getUser: (req, res, next) => {
-    // 資料已在res.locals.user中，理論上不必再讀或傳
-    // 但測試檔未經完整流程，res.locals中可能無資料
     return User.findByPk(req.params.id, {
       nest: true,
-      include: [{ model: Comment, include: Restaurant }]
+      include: [
+        { model: Comment, include: Restaurant },
+        { model: Restaurant, as: 'FavoritedRestaurants' },
+        { model: User, as: 'Followings' },
+        { model: User, as: 'Followers' }
+      ]
     })
       .then(user => {
         if (!user) throw new Error('user not exist!')
-        return res.render('users/profile', { viewedUser: user.toJSON() }) // 修正名稱user-->viewedUser，才不會把前端樣板的res.locals.user蓋掉，造成navbar等異常
+
+        user = user.toJSON()
+        user.commentedRestaurants = user.Comments
+          .map(comment => comment.Restaurant) // 取出所有被評論餐廳（未去重）
+          .sort((a, b) => a.id - b.id) // 依id排序
+          .filter((value, index, arr) => index === 0 || value.id !== arr[index - 1].id) // 如果id和前一個相同，就刪去
+
+        return res.render('users/profile', { viewedUser: user }) // 修正名稱user-->viewedUser，才不會把前端樣板的res.locals.user蓋掉，造成navbar等異常
       })
       .catch(err => next(err))
   },
