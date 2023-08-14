@@ -4,8 +4,12 @@ const router = express.Router()
 
 const restController = require('../../controllers/apis/restaurant-controller')
 
-router.get('/restaurants', restController.getRestaurants) // (頁面)首頁-餐廳瀏覽
+// 引入子路由
+const admin = require('./modules/admin')
 
-// router.get('/restaurants', authenticated, (req, res, next) => { console.log('test'); next() }) // (頁面)首頁-餐廳瀏覽
+// 管理介面路由
+router.use('/admin', admin)
+
+router.get('/restaurants', restController.getRestaurants) // (頁面)首頁-餐廳瀏覽
 
 module.exports = router

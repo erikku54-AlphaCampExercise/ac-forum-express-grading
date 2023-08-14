@@ -3,13 +3,13 @@ const { Restaurant, User, Category } = require('../../models')
 
 const { imgurFileHandler } = require('../../helpers/file-helpers')
 
+const adminServices = require('../../services/admin-services')
+
 const adminController = {
 
   // (頁面) 顯示餐廳管理清單
   getRestaurants: (req, res, next) => {
-    return Restaurant.findAll({ raw: true, nest: true, include: [Category] })
-      .then(restaurants => res.render('admin/restaurants', { restaurants }))
-      .catch(err => next(err))
+    return adminServices.getRestaurants(req, (err, data) => err ? next(err) : res.render('admin/restaurants', data))
   },
   // (頁面) 顯示單一餐廳詳細資料
   getRestaurant: (req, res, next) => {
