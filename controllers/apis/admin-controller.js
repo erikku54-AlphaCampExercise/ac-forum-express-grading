@@ -8,6 +8,12 @@ const adminController = {
     return adminServices.getRestaurants(req, (err, data) =>
       err ? next(err) : res.json({ status: 'success', data }))
   },
+  // (功能) 新增餐廳
+  postRestaurant: (req, res, next) => {
+    return adminServices.postRestaurant(req, (err, data) => {
+      err ? next(err) : res.json({ status: 'success', data })
+    })
+  },
   // (功能) 刪除餐廳
   deleteRestaurant: (req, res, next) => {
     return adminServices.deleteRestaurant(req, (err, data) =>

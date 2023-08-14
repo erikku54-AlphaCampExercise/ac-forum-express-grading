@@ -16,6 +16,7 @@ app.set('view engine', 'hbs')
 
 // setting body-parser
 app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 // setting session
 const session = require('express-session')

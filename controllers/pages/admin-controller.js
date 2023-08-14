@@ -28,25 +28,12 @@ const adminController = {
   },
   // (功能) 新增餐廳
   postRestaurant: (req, res, next) => {
-    const { name, categoryId, tel, address, openingHours, description } = req.body
-    if (!name) throw new Error('Restaurant name is required!')
-
-    const { file } = req
-    return imgurFileHandler(file) // 把取出的檔案傳給 file-helper 處理
-      .then(filePath => Restaurant.create({
-        name,
-        categoryId,
-        tel,
-        address,
-        openingHours,
-        description,
-        image: filePath || undefined // 將檔案路徑存在image中
-      }))
-      .then(() => {
-        req.flash('success_messages', 'restaurant was successfully created.')
-        res.redirect('/admin/restaurants')
-      })
-      .catch(err => next(err))
+    return adminServices.postRestaurant(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', 'restaurant was successfully created.')
+      req.session.createdData = data
+      res.redirect('/admin/restaurants')
+    })
   },
   // (頁面) 顯示修改餐廳表單
   editRestaurant: (req, res, next) => {
