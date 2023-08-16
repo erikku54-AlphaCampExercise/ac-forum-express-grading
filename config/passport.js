@@ -19,7 +19,7 @@ passport.use(new LocalStrategy(
   (req, email, password, cb) => {
     User.findOne({ where: { email } })
       .then(user => {
-        // 此處如果req.flash不拿掉，當前端呼叫API，if成立時系統會crash
+        // 此處如果req.flash不拿掉，當前端呼叫API，if成立時系統會crash，因為沒有session，flash找不到地方存
         if (!user) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！'))
         // if (!user) {
         //   return req.originalUrl.includes('/api/')
@@ -29,8 +29,13 @@ passport.use(new LocalStrategy(
 
         bcrypt.compare(password, user.password)
           .then(res => {
-            // 此處如果req.flash不拿掉，當前端呼叫API，if成立時系統會crash
+            // 此處如果req.flash不拿掉，當前端呼叫API，if成立時系統會crash，因為沒有session，flash找不到地方存
             if (!res) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！'))
+            // if (!res) {
+            //   return req.originalUrl.includes('/api/')
+            //     ? cb(null, false, { message: '帳號或密碼輸入錯誤!' })
+            //     : cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！'))
+            // }
             return cb(null, user)
           })
       })
@@ -55,7 +60,7 @@ passport.use(new JWTStrategy(jwtOptions, (jwtPayload, cb) => {
       { model: User, as: 'Followings' }
     ]
   })
-    .then(user => cb(null, user)) // 把user放到req.user中
+    .then(user => cb(null, user)) // 把user向後傳遞給passport.authenticate()
     .catch(err => cb(err))
 }))
 
